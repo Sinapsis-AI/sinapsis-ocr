@@ -7,8 +7,8 @@ from doctr.models import ocr_predictor
 from pydantic.dataclasses import dataclass
 from sinapsis_core.data_containers.annotations import BoundingBox, ImageAnnotations
 from sinapsis_core.data_containers.data_packet import DataContainer
-from sinapsis_core.template_base import (
-    Template,
+from sinapsis_core.template_base import Template
+from sinapsis_core.template_base.base_models import (
     TemplateAttributes,
     TemplateAttributeType,
 )
@@ -291,7 +291,7 @@ class DocTROCRPrediction(Template):
         Returns:
             list[ImageAnnotations]: Extracted annotations from the document.
         """
-        anns = []
+        anns: list[ImageAnnotations] = []
         document_dict = document.export()
 
         if not document_dict:

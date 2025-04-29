@@ -5,8 +5,9 @@ import easyocr
 import numpy as np
 from pydantic import Field
 from sinapsis_core.data_containers.annotations import BoundingBox, ImageAnnotations
-from sinapsis_core.data_containers.data_packet import DataContainer, ImagePacket, TextPacket
-from sinapsis_core.template_base import Template, TemplateAttributes, TemplateAttributeType
+from sinapsis_core.data_containers.data_packet import DataContainer, TextPacket
+from sinapsis_core.template_base import Template
+from sinapsis_core.template_base.base_models import TemplateAttributes, TemplateAttributeType
 from sklearn.feature_extraction.text import strip_accents_unicode
 
 

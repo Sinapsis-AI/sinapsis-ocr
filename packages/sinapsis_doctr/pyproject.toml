@@ -1,6 +1,6 @@
 [project]
 name = "sinapsis-doctr"
-version = "0.1.0"
+version = "0.1.1"
 description = "Perform optical character recognition using the DocTR library"
 readme = "README.md"
 license = { file = "LICENSE" }

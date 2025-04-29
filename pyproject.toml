@@ -1,10 +1,10 @@
 [project]
 name = "sinapsis-ocr"
-version = "0.1.0"
+version = "0.1.1"
 description = "Implements Sinapsis templates to perform optical character recognition on images"
 authors = [{ name = "SinapsisAI", email = "dev@sinapsis.tech" }]
 readme = "README.md"
-license = { file = "LICENSE" }
+license-files = ["LICENSE"]
 requires-python = ">=3.10"
 dependencies = [
     "sinapsis>=0.1.1",
@@ -17,8 +17,8 @@ dev = [
 
 [project.optional-dependencies]
 webapp-gradio = [
-    "gradio>=5.21.0",
     "sinapsis-data-visualization[visualization-matplotlib]>=0.1.0",
+    "sinapsis[webapp]>=0.2.7",
 ]
 
 all = [
@@ -33,7 +33,7 @@ exclude = ["packages/*.egg-info"]
 
 [tool.setuptools]
 packages = { find = { where = ["packages"] } }
-license-files = []
+
 
 [tool.uv.sources]
 sinapsis-doctr = { workspace = true }
