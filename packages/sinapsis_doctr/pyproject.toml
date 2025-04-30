@@ -35,9 +35,6 @@ build-backend = "setuptools.build_meta"
 [[tool.uv.index]]
 url = "https://pypi.sinapsis.tech/"
 
-[tool.setuptools]
-license-files = []
-
 [project.urls]
 Homepage = "https://sinapsis.tech"
 Documentation = "https://docs.sinapsis.tech/docs"
