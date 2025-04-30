@@ -1,6 +1,6 @@
 [project]
 name = "sinapsis-ocr"
-version = "0.1.2"
+version = "0.1.3"
 description = "Implements Sinapsis templates to perform optical character recognition on images"
 authors = [{ name = "SinapsisAI", email = "dev@sinapsis.tech" }]
 readme = "README.md"
