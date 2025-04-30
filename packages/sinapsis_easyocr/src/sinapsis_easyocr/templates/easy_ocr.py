@@ -7,7 +7,12 @@ from pydantic import Field
 from sinapsis_core.data_containers.annotations import BoundingBox, ImageAnnotations
 from sinapsis_core.data_containers.data_packet import DataContainer, TextPacket
 from sinapsis_core.template_base import Template
-from sinapsis_core.template_base.base_models import TemplateAttributes, TemplateAttributeType
+from sinapsis_core.template_base.base_models import (
+    OutputTypes,
+    TemplateAttributes,
+    TemplateAttributeType,
+    UIPropertiesMetadata,
+)
 from sklearn.feature_extraction.text import strip_accents_unicode
 
 
@@ -38,6 +43,7 @@ class EasyOCR(Template):
     """
 
     AttributesBaseModel = EasyOCRAttributes
+    UIProperties = UIPropertiesMetadata(category="OCR", output_type=OutputTypes.IMAGE)
 
     def __init__(self, attributes: TemplateAttributeType) -> None:
         super().__init__(attributes)

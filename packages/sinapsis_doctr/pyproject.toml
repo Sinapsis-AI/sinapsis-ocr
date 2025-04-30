@@ -1,9 +1,9 @@
 [project]
 name = "sinapsis-doctr"
-version = "0.1.1"
+version = "0.1.2"
 description = "Perform optical character recognition using the DocTR library"
 readme = "README.md"
-license = { file = "LICENSE" }
+license-files = ["LICENSE"]
 authors = [{ name = "SinapsisAI", email = "dev@sinapsis.tech" }]
 requires-python = ">=3.10"
 dependencies = [

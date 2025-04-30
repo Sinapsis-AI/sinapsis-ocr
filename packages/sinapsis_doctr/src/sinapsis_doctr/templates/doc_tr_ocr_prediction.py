@@ -9,8 +9,10 @@ from sinapsis_core.data_containers.annotations import BoundingBox, ImageAnnotati
 from sinapsis_core.data_containers.data_packet import DataContainer
 from sinapsis_core.template_base import Template
 from sinapsis_core.template_base.base_models import (
+    OutputTypes,
     TemplateAttributes,
     TemplateAttributeType,
+    UIPropertiesMetadata,
 )
 from sinapsis_data_visualization.helpers.detection_utils import bbox_xyxy_to_xywh
 
@@ -128,6 +130,8 @@ class DocTROCRPrediction(Template):
         detect_orientation: bool = False
         straighten_pages: bool = False
         detect_language: bool = False
+
+    UIProperties = UIPropertiesMetadata(category="OCR", output_type=OutputTypes.MULTIMODAL)
 
     def __init__(self, attributes: TemplateAttributeType) -> None:
         super().__init__(attributes)
