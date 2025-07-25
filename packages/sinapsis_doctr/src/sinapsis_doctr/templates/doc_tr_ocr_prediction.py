@@ -16,6 +16,8 @@ from sinapsis_core.template_base.base_models import (
 )
 from sinapsis_data_visualization.helpers.detection_utils import bbox_xyxy_to_xywh
 
+from sinapsis_doctr.helpers.tags import Tags
+
 DetectionArchitectures: TypeAlias = Literal[
     "db_resnet34",
     "db_resnet50",
@@ -131,7 +133,11 @@ class DocTROCRPrediction(Template):
         straighten_pages: bool = False
         detect_language: bool = False
 
-    UIProperties = UIPropertiesMetadata(category="OCR", output_type=OutputTypes.MULTIMODAL)
+    UIProperties = UIPropertiesMetadata(
+        category="OCR",
+        output_type=OutputTypes.MULTIMODAL,
+        tags=[Tags.OCR, Tags.IMAGE, Tags.DOCTR, Tags.TEXT, Tags.TEXT_RECOGNITION],
+    )
 
     def __init__(self, attributes: TemplateAttributeType) -> None:
         super().__init__(attributes)
