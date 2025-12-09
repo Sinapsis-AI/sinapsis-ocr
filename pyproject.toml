@@ -1,6 +1,6 @@
 [project]
 name = "sinapsis-ocr"
-version = "0.1.6"
+version = "0.1.10"
 description = "Implements Sinapsis templates to perform optical character recognition on images"
 authors = [{ name = "SinapsisAI", email = "dev@sinapsis.tech" }]
 readme = "README.md"
@@ -9,7 +9,6 @@ requires-python = ">=3.10"
 dependencies = [
     "sinapsis>=0.1.1",
 ]
-
 [dependency-groups]
 dev = [
     "ruff>=0.8.3",

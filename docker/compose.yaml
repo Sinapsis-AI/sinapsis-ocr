@@ -4,7 +4,7 @@ services:
     image: sinapsis-ocr:base
     build:
       context: ../
-      dockerfile: docker/Dockerfile-dev
+      dockerfile: docker/Dockerfile
       ssh:
         - default
     shm_size: '8gb'

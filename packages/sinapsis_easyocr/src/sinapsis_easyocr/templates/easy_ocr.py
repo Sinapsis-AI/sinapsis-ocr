@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
-from typing import Any
+import gc
+from typing import Literal
 
 import cv2
 import easyocr
 import numpy as np
-from pydantic import Field
+import torch
+from pydantic import BaseModel, ConfigDict, Field
 from sinapsis_core.data_containers.annotations import BoundingBox, ImageAnnotations
 from sinapsis_core.data_containers.data_packet import DataContainer, TextPacket
 from sinapsis_core.template_base import Template
@@ -19,6 +21,64 @@ from sklearn.feature_extraction.text import strip_accents_unicode
 from sinapsis_easyocr.helpers.tags import Tags
 
 
+class ReaderParams(BaseModel):
+    """Configuration parameters for initializing the EasyOCR Reader instance.
+
+    This model holds settings related to model loading, hardware acceleration,
+    and the core network architectures to be used by the OCR engine.
+    """
+
+    lang_list: list[str] = ["en"]
+    gpu: bool = True
+    model_storage_directory: str | None = None
+    user_network_directory: str | None = None
+    detect_network: Literal["craft", "dbnet18"] = "craft"
+    recog_network: str = "standard"
+    download_enabled: bool = True
+    detector: bool = True
+    recognizer: bool = True
+    verbose: bool = True
+    quantize: bool = True
+    cudnn_benchmark: bool = False
+    model_config = ConfigDict(extra="forbid")
+
+
+class ReaderTextParams(BaseModel):
+    """Configuration parameters for the `readtext` method.
+
+    This model holds runtime settings that control how an image is processed,
+    including detection thresholds and decoding options.
+    """
+
+    decoder: str = "greedy"
+    beamWidth: int = 5
+    batch_size: int = 1
+    workers: int = 0
+    detail: int = 1
+    paragraph: bool = False
+    min_size: int = 20
+    contrast_ths: float = 0.1
+    adjust_contrast: float = 0.5
+    filter_ths: float = 0.003
+    text_threshold: float = 0.7
+    low_text: float = 0.4
+    link_threshold: float = 0.4
+    canvas_size: int = 2560
+    mag_ratio: float = 1.0
+    slope_ths: float = 0.1
+    ycenter_ths: float = 0.5
+    height_ths: float = 0.5
+    width_ths: float = 0.5
+    y_ths: float = 0.5
+    x_ths: float = 1.0
+    add_margin: float = 0.1
+    threshold: float = 0.2
+    bbox_min_score: float = 0.2
+    bbox_min_size: int = 3
+    max_candidates: int = 0
+    model_config = ConfigDict(extra="forbid")
+
+
 class EasyOCRAttributes(TemplateAttributes):
     """Attributes for EasyOCR template.
 
@@ -30,8 +90,8 @@ class EasyOCRAttributes(TemplateAttributes):
         False.
     """
 
-    reader_params: dict[str, Any] = Field(default={"lang_list": ["en"]})
-    read_text_params: dict[str, Any] = Field(default_factory=dict)
+    reader_params: ReaderParams = Field(default_factory=ReaderParams)
+    read_text_params: ReaderTextParams = Field(default_factory=ReaderTextParams)
     get_full_text: bool = False
     img_height: int = 1024
     img_width: int = 1024
@@ -64,14 +124,16 @@ class EasyOCR(Template):
 
     def __init__(self, attributes: TemplateAttributeType) -> None:
         super().__init__(attributes)
-        self.reader = easyocr.Reader(**self.attributes.reader_params)
-        self.update_read_text_params()
+        self.reader = self.initialize_reader()
 
-    def update_read_text_params(self) -> None:
+    def initialize_reader(self) -> easyocr.Reader:
+        """Initializes and returns an instance of the easyocr.Reader
+
+        Returns:
+            easyocr.Reader: Instance of the easyocr.Reader with the selected
+                `reader_params`.`
         """
-        Ensure that the OCR reader results are produced in dict format.
-        """
-        self.attributes.read_text_params.update({"output_format": "dict"})
+        return easyocr.Reader(**self.attributes.reader_params.model_dump())
 
     def _get_bbox(self, bbox: np.ndarray, img: np.ndarray) -> BoundingBox:
         x1, y1 = np.min(bbox, axis=0)
@@ -151,8 +213,7 @@ class EasyOCR(Template):
             if self.attributes.enable_img_resize:
                 img = self._resize_input_image(img)
 
-            self.attributes.read_text_params["image"] = img
-            results = self.reader.readtext(**self.attributes.read_text_params)
+            results = self.reader.readtext(img, **self.attributes.read_text_params.model_dump(), output_format="dict")
             annotations = self._parse_results(results, image_packet.content)
 
             if annotations and self.attributes.get_full_text:
@@ -179,3 +240,16 @@ class EasyOCR(Template):
         else:
             self._process_images(container)
         return container
+
+    def reset_state(self, template_name: str | None = None) -> None:
+        """Releases the EasyOCR model from memory and re-initializes it.
+
+        Args:
+            template_name (str | None, optional): The name of the template instance being reset. Defaults to None.
+        """
+        _ = template_name
+        del self.reader
+        gc.collect()
+        torch.cuda.empty_cache()
+        torch.cuda.ipc_collect()
+        self.reader = self.initialize_reader()

@@ -1,6 +1,6 @@
 [project]
 name = "sinapsis-easyocr"
-version = "0.1.6"
+version = "0.1.10"
 description = "Perform optical character recognition using the EasyOCR library"
 readme = "README.md"
 license-files = ["LICENSE"]
