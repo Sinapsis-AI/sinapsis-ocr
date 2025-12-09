@@ -1,8 +1,6 @@
 agent:
   name: my_agent_test
   description: "Agent to read image from folder, perform EasyOCR prediction and save the inference image in file."
-  attributes:
-    queue_name: EasyOCR
 
 templates:
 - template_name: InputTemplate
