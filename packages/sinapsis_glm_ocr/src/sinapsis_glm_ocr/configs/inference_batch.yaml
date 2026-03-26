@@ -1,0 +1,31 @@
+agent:
+  name: glm_ocr_batch_agent
+  description: "Agent to read images and perform GLM OCR batch inference for faster processing."
+
+templates:
+  - template_name: InputTemplate
+    class_name: InputTemplate
+    attributes: {}
+
+  - template_name: FolderImageDatasetCV2
+    class_name: FolderImageDatasetCV2
+    template_input: InputTemplate
+    attributes:
+      load_on_init: True
+      root_dir: "."
+      data_dir: "artifacts"
+      batch_size: 4
+
+  - template_name: GLMOCRBatchInference
+    class_name: GLMOCRBatchInference
+    template_input: FolderImageDatasetCV2
+    attributes:
+      prompt: "Text Recognition:"
+      init_args:
+        pretrained_model_name_or_path: zai-org/GLM-OCR
+        torch_dtype: auto
+        attn_implementation: kernels-community/flash-attn2
+        device_map: auto
+      generation_config:
+        max_new_tokens: 8192
+        do_sample: false

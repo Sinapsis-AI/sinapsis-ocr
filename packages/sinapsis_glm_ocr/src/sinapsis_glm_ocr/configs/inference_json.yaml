@@ -1,0 +1,54 @@
+agent:
+  name: glm_ocr_agent
+  description: "Agent to read images, perform GLM OCR, and extract text."
+
+templates:
+  - template_name: InputTemplate
+    class_name: InputTemplate
+    attributes: {}
+
+  - template_name: FolderImageDatasetCV2
+    class_name: FolderImageDatasetCV2
+    template_input: InputTemplate
+    attributes:
+      load_on_init: True
+      root_dir: "."
+      data_dir: "artifacts"
+      pattern: "recipe.jpg"
+
+  - template_name: GLMOCRInference
+    class_name: GLMOCRInference
+    template_input: FolderImageDatasetCV2
+    attributes:
+      prompt: |
+        Extract the information from the provided medical prescription image and output
+        it strictly as a valid JSON object matching the following schema.
+        {
+          "patient_info": {
+            "name": "string",
+            "age": "string"
+          },
+          "doctor_info": {
+            "name": "string",
+            "license_number": "string"
+          },
+          "medications": [
+            {
+              "drug_name": "string",
+              "dosage": "string",
+              "instructions": "string",
+              "quantity": "string"
+            }
+          ],
+          "indications": [
+            "string"
+          ]
+        }
+      init_args:
+        pretrained_model_name_or_path: zai-org/GLM-OCR
+        torch_dtype: auto
+        attn_implementation: kernels-community/flash-attn2
+        device_map: auto
+      generation_config:
+        max_new_tokens: 8192
+        do_sample: false

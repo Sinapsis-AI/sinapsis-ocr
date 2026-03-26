@@ -1,0 +1,29 @@
+agent:
+  name: deepseek_ocr_grounding_agent
+  description: "Agent to read images, perform DeepSeek OCR with grounding (bboxes), draw bboxes and save images."
+
+templates:
+  - template_name: InputTemplate
+    class_name: InputTemplate
+    attributes: {}
+
+  - template_name: DeepSeekOCRInference
+    class_name: DeepSeekOCRInference
+    template_input: InputTemplate
+    attributes:
+      prompt: "OCR the image."
+      enable_grounding: true
+      mode: tiny
+      init_args:
+        pretrained_model_name_or_path: deepseek-ai/DeepSeek-OCR
+        torch_dtype: auto
+        attn_implementation: flash_attention_2
+        trust_remote_code: true
+        use_safetensors: true
+
+  - template_name: BBoxDrawer
+    class_name: BBoxDrawer
+    template_input: DeepSeekOCRInference
+    attributes:
+      draw_confidence: true
+      draw_extra_labels: true

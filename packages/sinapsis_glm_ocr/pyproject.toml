@@ -1,0 +1,60 @@
+[project]
+name = "sinapsis-glm-ocr"
+version = "0.1.0"
+description = "Templates for optical character recognition using the GLM-OCR model"
+readme = "README.md"
+license-files = ["LICENSE"]
+authors = [{ name = "SinapsisAI", email = "dev@sinapsis.tech" }]
+requires-python = ">=3.10"
+dependencies = [
+    "sinapsis>=0.2.24",
+    "flash-attn>=2.8.3",
+    "torch==2.8.0",
+    "accelerate>=1.12.0",
+    "sinapsis-generic-data-tools>=0.1.11",
+    "transformers>=4.46.3",
+    "kernels>=0.12.1",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.8.3",
+    "pre-commit>=4.0.1",
+]
+
+[project.optional-dependencies]
+sinapsis-data-readers = [
+    "sinapsis-data-readers[opencv]>=0.1.0",
+]
+sinapsis-data-writers = [
+    "sinapsis-data-writers>=0.1.0",
+]
+sinapsis-data-visualization = [
+    "sinapsis-data-visualization[visualization-matplotlib]>=0.1.0",
+]
+all = [
+    "sinapsis-glm-ocr[sinapsis-data-readers]",
+    "sinapsis-glm-ocr[sinapsis-data-writers]",
+    "sinapsis-glm-ocr[sinapsis-data-visualization]",
+]
+
+[[tool.uv.index]]
+name = "sinapsis"
+url = "https://pypi.sinapsis.tech/"
+
+[tool.uv.sources]
+flash-attn = [
+  { url = "https://github.com/mjun0812/flash-attention-prebuild-wheels/releases/download/v0.5.4/flash_attn-2.8.3+cu124torch2.8-cp310-cp310-linux_x86_64.whl", marker = "python_version == '3.10'" },
+  { url = "https://github.com/mjun0812/flash-attention-prebuild-wheels/releases/download/v0.5.4/flash_attn-2.8.3+cu124torch2.8-cp311-cp311-linux_x86_64.whl", marker = "python_version == '3.11'" },
+  { url = "https://github.com/mjun0812/flash-attention-prebuild-wheels/releases/download/v0.5.4/flash_attn-2.8.3+cu124torch2.8-cp312-cp312-linux_x86_64.whl", marker = "python_version == '3.12'" }
+]
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project.urls]
+Homepage = "https://sinapsis.tech"
+Documentation = "https://docs.sinapsis.tech/docs"
+Tutorials = "https://docs.sinapsis.tech/tutorials"
+Repository = "https://github.com/Sinapsis-AI/sinapsis-ocr.git"
