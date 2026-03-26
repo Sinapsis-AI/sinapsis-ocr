@@ -1,6 +1,6 @@
 [project]
 name = "sinapsis-ocr"
-version = "0.1.10"
+version = "0.3.0"
 description = "Implements Sinapsis templates to perform optical character recognition on images"
 authors = [{ name = "SinapsisAI", email = "dev@sinapsis.tech" }]
 readme = "README.md"
@@ -25,6 +25,8 @@ all = [
         "sinapsis-ocr[webapp-gradio]",
         "sinapsis-doctr[all]",
         "sinapsis-easyocr[all]",
+        "sinapsis-deepseek-ocr[all]",
+        "sinapsis-glm-ocr[all]",
 ]
 
 [tool.uv.workspace]
@@ -34,10 +36,11 @@ exclude = ["packages/*.egg-info"]
 [tool.setuptools]
 packages = { find = { where = ["packages"] } }
 
-
 [tool.uv.sources]
 sinapsis-doctr = { workspace = true }
 sinapsis-easyocr = { workspace = true }
+sinapsis-deepseek-ocr = { workspace = true }
+sinapsis-glm-ocr = { workspace = true }
 
 [[tool.uv.index]]
 name = "sinapsis"
@@ -49,6 +52,7 @@ lint.select = [
     "ANN",
     "BLE",
     "C4",
+    "D",
     "E",
     "F",
     "FIX",
@@ -65,11 +69,22 @@ lint.select = [
     "T20",
     "TD",
     "TID",
+    "UP",
+    "W",
 ]
 lint.preview = true
-lint.ignore = ['ANN401']
+lint.pydocstyle.convention = "google"
+lint.ignore = [
+    "ANN401",
+    "D100",
+    "D104",
+    "D107",
+    "RUF067",
+]
 line-length = 120
 show-fixes = true
+target-version = "py310"
+fix = true
 
 [project.urls]
 Homepage = "https://sinapsis.tech"

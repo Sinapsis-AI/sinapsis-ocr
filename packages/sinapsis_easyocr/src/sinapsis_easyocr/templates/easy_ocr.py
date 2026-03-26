@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import gc
 from typing import Literal
 
@@ -99,13 +98,25 @@ class EasyOCRAttributes(TemplateAttributes):
 
 
 class EasyOCR(Template):
-    """
-    This template uses EasyOCR to extract text from images, along with their
-    bounding boxes and confidence scores. The extracted annotations are stored
-    in `ImageAnnotations`, and optionally, full text can be stored in a `TextPacket`.
+    """EasyOCR template for performing Optical Character Recognition (OCR) on images.
 
-    Attributes:
-        reader (easyocr.Reader): The OCR model initialized with the given settings.
+    Usage example:
+
+    agent:
+      name: my_agent_test
+
+    templates:
+    - template_name: InputTemplate
+      class_name: InputTemplate
+      attributes: {}
+
+    - template_name: EasyOCR
+      class_name: EasyOCR
+      template_input: InputTemplate
+      attributes:
+        reader_params:
+          lang_list: ["en"]
+        get_full_text: False
     """
 
     AttributesBaseModel = EasyOCRAttributes
@@ -127,7 +138,7 @@ class EasyOCR(Template):
         self.reader = self.initialize_reader()
 
     def initialize_reader(self) -> easyocr.Reader:
-        """Initializes and returns an instance of the easyocr.Reader
+        """Initializes and returns an instance of the easyocr.Reader.
 
         Returns:
             easyocr.Reader: Instance of the easyocr.Reader with the selected
@@ -152,14 +163,15 @@ class EasyOCR(Template):
         return BoundingBox(x=x1, y=y1, w=x2 - x1, h=y2 - y1)
 
     def _parse_results(self, results: list[dict], img: np.ndarray) -> list[ImageAnnotations]:
-        """
-        Converts EasyOCR results into a list of `ImageAnnotations` objects.
+        """Parse the results from an image processing operation and convert them into a list of image annotations.
 
         Args:
-            results (list[dict]): The results from EasyOCR.
+            results (list[dict]): A list of dictionaries containing the results from the image processing,
+                                  where each dictionary includes keys for 'text', 'confident', and 'boxes'.
+            img (np.ndarray): The image as a NumPy array, used to compute bounding boxes.
 
         Returns:
-            list[ImageAnnotations]: The extracted annotations, including bounding boxes, text, and confidence scores.
+            list[ImageAnnotations]: A list of ImageAnnotations objects created from the parsed results.
         """
         annotations = []
         for result in results:
@@ -180,8 +192,7 @@ class EasyOCR(Template):
 
     @staticmethod
     def _get_text_packet_from_annotations(annotations: list[ImageAnnotations]) -> TextPacket:
-        """
-        Generates a `TextPacket` from extracted OCR annotations.
+        """Generates a `TextPacket` from extracted OCR annotations.
 
         Args:
             annotations (list[ImageAnnotations]): The extracted OCR annotations.
@@ -202,8 +213,7 @@ class EasyOCR(Template):
         return cv2.resize(image, (self.attributes.img_width, self.attributes.img_height))
 
     def _process_images(self, container: DataContainer) -> None:
-        """
-        Processes each image packet in the container, producing OCR results and storing them as annotations.
+        """Processes each image packet in the container, producing OCR results and storing them as annotations.
 
         Args:
             container (DataContainer): Data-container with image packets to be processed.
@@ -223,9 +233,9 @@ class EasyOCR(Template):
             image_packet.annotations.extend(annotations)
 
     def execute(self, container: DataContainer) -> DataContainer:
-        """
-        Performs OCR detection to the image packets stored in the data-container. The extracted text and predicted
-        annotations are added to the output data-container.
+        """Performs OCR detection to the image packets stored in the data-container.
+
+        The extracted text and predicted annotations are added to the output data-container.
 
         Args:
             container (DataContainer): Input data-container with image packets.
@@ -233,7 +243,6 @@ class EasyOCR(Template):
         Returns:
             DataContainer: Output data-container with predicted OCR results.
         """
-
         if not container.images:
             log_msg = f"No images to process in {self.instance_name}, returning input DataContainer."
             self.logger.debug(log_msg)

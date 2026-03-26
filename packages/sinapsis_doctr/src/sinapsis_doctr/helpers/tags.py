@@ -1,8 +1,9 @@
-# -*- coding: utf-8 -*-
 from enum import Enum
 
 
 class Tags(Enum):
+    """Enumeration for tags used in optical character recognition."""
+
     DOCTR = "doctr"
     IMAGE = "image"
     OCR = "optical_character_recognition"

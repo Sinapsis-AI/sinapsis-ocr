@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import gradio as gr
 from sinapsis.webapp.agent_gradio_helper import add_logo_and_title, css_header, init_image_inference
 from sinapsis_core.utils.env_var_keys import AGENT_CONFIG_PATH, GRADIO_SHARE_APP

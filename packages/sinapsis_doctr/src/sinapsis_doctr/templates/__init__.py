@@ -1,6 +1,5 @@
-# -*- coding: utf-8 -*-
 import importlib
-from typing import Callable
+from collections.abc import Callable
 
 from sinapsis.templates import _import_template_package
 

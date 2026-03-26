@@ -13,6 +13,7 @@ Sinapsis OCR
 
 <p align="center">
 <a href="#installation">🐍 Installation</a> •
+<a href="#transformers-compatibility">⚠️ Compatibility</a> •
 <a href="#packages">📦 Packages</a> •
 <a href="#features">🚀 Features</a> •
 <a href="#usage">📚 Usage example</a> •
@@ -27,8 +28,10 @@ Sinapsis OCR
 
 This mono repo consists of different packages for OCR:
 
+* <code>sinapsis-deepseek-ocr</code>
 * <code>sinapsis-doctr</code>
 * <code>sinapsis-easyocr</code>
+* <code>sinapsis-glm-ocr</code>
 
 Install using your package manager of choice. We encourage the use of <code>uv</code>
 
@@ -65,10 +68,35 @@ with <code>uv</code>:
   uv pip install sinapsis-ocr[all] --extra-index-url https://pypi.sinapsis.tech
 ```
 
+<h3 id="transformers-compatibility">⚠️ Transformers Version Compatibility</h3>
+
+**DeepSeek OCR and GLM OCR have different transformers version requirements.** They cannot be used together in the same environment:
+
+| Package | Transformers Version | Notes |
+|---------|---------------------|-------|
+| `sinapsis-deepseek-ocr` | `==4.46.3` (pinned) | DeepSeek models require this exact version |
+| `sinapsis-glm-ocr` | `>=4.46.3` (flexible) | GLM-OCR works with `>=5.1.0` |
+
+**When installing from PyPI:**
+```bash
+# DeepSeek OCR - installs transformers==4.46.3
+uv pip install sinapsis-deepseek-ocr[all] --extra-index-url https://pypi.sinapsis.tech
+
+# GLM OCR - installs latest transformers (5.x)
+uv pip install sinapsis-glm-ocr[all] --extra-index-url https://pypi.sinapsis.tech
+```
+
+**Important:** Installing both `sinapsis-deepseek-ocr` and `sinapsis-glm-ocr` in the same environment may force transformers==4.46.3, which will cause GLM OCR to fail. Use separate virtual environments if you need both.
+
 <h2 id="packages">📦 Packages</h2>
 
 <details>
 <summary><strong><span style="font-size: 1.0em;">Packages summary</span></strong></summary>
+
+- **Sinapsis DeepSeek OCR**
+  - Uses the DeepSeek OCR model for high-quality OCR
+  - Supports optional grounding for bounding box extraction
+  - Multiple inference modes (tiny, small, base, large, gundam)
 
 - **Sinapsis DocTR**
   - Uses the DocTR library for high-quality OCR with modern deep learning models
@@ -79,6 +107,11 @@ with <code>uv</code>:
   - Leverages the EasyOCR library for simple yet effective OCR
   - Supports multiple languages
   - Extracts text with bounding boxes and confidence scores
+
+- **Sinapsis GLM OCR**
+  - Uses Zhipu AI's GLM-OCR model for high-quality OCR
+  - Supports document parsing (text, formula, table) and structured information extraction via JSON schema
+  - Batch inference support for faster processing of multiple images
 </details>
 
 > [!TIP]
@@ -102,35 +135,35 @@ agent:
   description: agent to run inference with DocTR, performs on images read, recognition and save
 
 templates:
-- template_name: InputTemplate
-  class_name: InputTemplate
-  attributes: {}
+  - template_name: InputTemplate
+    class_name: InputTemplate
+    attributes: {}
 
-- template_name: FolderImageDatasetCV2
-  class_name: FolderImageDatasetCV2
-  template_input: InputTemplate
-  attributes:
-    data_dir: dataset/input
+  - template_name: FolderImageDatasetCV2
+    class_name: FolderImageDatasetCV2
+    template_input: InputTemplate
+    attributes:
+      data_dir: dataset/input
 
-- template_name: DocTROCRPrediction
-  class_name: DocTROCRPrediction
-  template_input: FolderImageDatasetCV2
-  attributes:
-    recognized_characters_as_labels: True
+  - template_name: DocTROCRPrediction
+    class_name: DocTROCRPrediction
+    template_input: FolderImageDatasetCV2
+    attributes:
+      recognized_characters_as_labels: True
 
-- template_name: BBoxDrawer
-  class_name: BBoxDrawer
-  template_input: DocTROCRPrediction
-  attributes:
-    draw_confidence: True
-    draw_extra_labels: True
+  - template_name: BBoxDrawer
+    class_name: BBoxDrawer
+    template_input: DocTROCRPrediction
+    attributes:
+      draw_confidence: True
+      draw_extra_labels: True
 
-- template_name: ImageSaver
-  class_name: ImageSaver
-  template_input: BBoxDrawer
-  attributes:
-    save_dir: output
-    root_dir: dataset
+  - template_name: ImageSaver
+    class_name: ImageSaver
+    template_input: BBoxDrawer
+    attributes:
+      save_dir: output
+      root_dir: dataset
 ```
 </details>
 
@@ -143,34 +176,115 @@ agent:
   description: agent to run inference with EasyOCR, performs on images read, recognition and save
 
 templates:
-- template_name: InputTemplate
-  class_name: InputTemplate
-  attributes: {}
+  - template_name: InputTemplate
+    class_name: InputTemplate
+    attributes: {}
 
-- template_name: FolderImageDatasetCV2
-  class_name: FolderImageDatasetCV2
-  template_input: InputTemplate
-  attributes:
-    data_dir: dataset/input
+  - template_name: FolderImageDatasetCV2
+    class_name: FolderImageDatasetCV2
+    template_input: InputTemplate
+    attributes:
+      data_dir: dataset/input
 
-- template_name: EasyOCR
-  class_name: EasyOCR
-  template_input: FolderImageDatasetCV2
-  attributes: {}
+  - template_name: EasyOCR
+    class_name: EasyOCR
+    template_input: FolderImageDatasetCV2
+    attributes: {}
 
-- template_name: BBoxDrawer
-  class_name: BBoxDrawer
-  template_input: EasyOCR
-  attributes:
-    draw_confidence: True
-    draw_extra_labels: True
+  - template_name: BBoxDrawer
+    class_name: BBoxDrawer
+    template_input: EasyOCR
+    attributes:
+      draw_confidence: True
+      draw_extra_labels: True
 
-- template_name: ImageSaver
-  class_name: ImageSaver
-  template_input: BBoxDrawer
-  attributes:
-    save_dir: output
-    root_dir: dataset
+  - template_name: ImageSaver
+    class_name: ImageSaver
+    template_input: BBoxDrawer
+    attributes:
+      save_dir: output
+      root_dir: dataset
+```
+</details>
+
+<details>
+<summary><strong><span style="font-size: 1.4em;">DeepSeek OCR Example</span></strong></summary>
+
+```yaml
+agent:
+  name: deepseek_ocr_inference
+  description: agent to run inference with DeepSeek OCR
+
+templates:
+  - template_name: InputTemplate
+    class_name: InputTemplate
+    attributes: {}
+
+  - template_name: FolderImageDatasetCV2
+    class_name: FolderImageDatasetCV2
+    template_input: InputTemplate
+    attributes:
+      data_dir: dataset/input
+
+  - template_name: DeepSeekOCRInference
+    class_name: DeepSeekOCRInference
+    template_input: FolderImageDatasetCV2
+    attributes:
+      prompt: "Convert the document to markdown."
+      enable_grounding: true
+      mode: base
+
+  - template_name: BBoxDrawer
+    class_name: BBoxDrawer
+    template_input: DeepSeekOCRInference
+    attributes:
+      draw_confidence: True
+      draw_extra_labels: True
+
+  - template_name: ImageSaver
+    class_name: ImageSaver
+    template_input: BBoxDrawer
+    attributes:
+      save_dir: output
+      root_dir: dataset
+```
+</details>
+
+<details>
+<summary><strong><span style="font-size: 1.4em;">GLM OCR Example</span></strong></summary>
+
+```yaml
+agent:
+  name: glm_ocr_table_agent
+  description: "Agent to read images, perform GLM OCR for table recognition."
+
+templates:
+  - template_name: InputTemplate
+    class_name: InputTemplate
+    attributes: {}
+
+  - template_name: FolderImageDatasetCV2
+    class_name: FolderImageDatasetCV2
+    template_input: InputTemplate
+    attributes:
+      load_on_init: True
+      root_dir: "."
+      data_dir: "artifacts"
+      pattern: "expense.jpg"
+
+  - template_name: GLMOCRInference
+    class_name: GLMOCRInference
+    template_input: FolderImageDatasetCV2
+    attributes:
+      prompt: "Table Recognition:"
+      init_args:
+        pretrained_model_name_or_path: zai-org/GLM-OCR
+        torch_dtype: auto
+        attn_implementation: kernels-community/flash-attn2
+        device_map: auto
+      generation_config:
+        max_new_tokens: 8192
+        do_sample: false
 ```
 </details>
 

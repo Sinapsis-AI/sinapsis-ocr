@@ -13,8 +13,6 @@ templates:
   attributes:
     reader_params:
       lang_list: ["en"]
-    read_text_params:
-      output_format: "dict"
     get_full_text: False
 
 - template_name: BBoxDrawer

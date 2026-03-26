@@ -1,8 +1,9 @@
-# -*- coding: utf-8 -*-
 from enum import Enum
 
 
 class Tags(Enum):
+    """Enumeration for tags used in optical character recognition."""
+
     EASYOCR = "easyocr"
     DOCUMENT = "document"
     IMAGE = "image"
